@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"golang.org/x/text/encoding/charmap"
 	"log"
 	"strings"
 )
@@ -14,16 +15,34 @@ func hexaNumberToInteger(hexaString string) string {
 	return numberStr
 }
 
-func main() {
-	/*var hexaNumber string
-	hexaNumber = "57"
-	output, err := strconv.ParseInt(hexaNumberToInteger(hexaNumber), 16, 64)
+func ReadeWindows1251File(text string) (string, error) {
+	dec := charmap.Windows1251.NewDecoder()
+	out, err := dec.String(text)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
-	fmt.Printf("Output %d\n", output)
-	fmt.Println(string(output))
+
+	return out, nil
+}
+
+func WriteWindows1251File(text string) (string, error) {
+	cod := charmap.Windows1251.NewEncoder()
+	out, err := cod.String(text)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return out, nil
+}
+
+func main() {
+	/*fmt.Println([]byte{0x50, 0x4f, 0x57, 0x45, 0x50, 0x28, 0x29, 0x03, 0x64})
+	fmt.Println(string([]byte{0x50, 0x4f, 0x57, 0x45, 0x50, 0x28, 0x29, 0x03, 0x64}))
+	fmt.Println(string([]byte{80, 79, 87, 69, 80, 40, 41, 3, 100}))
+
+
+	fmt.Println(ReadeWindows1251File(string([]byte{80 ,207, 215, 197, 80, 40 ,48, 172 ,48 ,177 ,48 ,169, 141, 10, 3, 99 })))
+	//fmt.Println(hexaNumberToInteger(string([]byte{207, 2})))
 	return*/
 
 	config := &serial.Config{
@@ -65,9 +84,7 @@ func main() {
 	}
 	if n > 0 {
 		fmt.Println(buf[:n], "-2")
-	}
-	for _, b := range buf[:n] {
-		fmt.Print(string(b))
+		fmt.Println(string(buf[:n]))
 	}
 
 	buf = make([]byte, 1024)
