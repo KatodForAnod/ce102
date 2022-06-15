@@ -14,6 +14,7 @@ type Ce102 struct {
 }
 
 func (c *Ce102) Connect(conf *serial.Config) error {
+	log.Println("Connect port:", conf.Name)
 	port, err := serial.OpenPort(conf)
 	if err != nil {
 		return err
@@ -24,24 +25,29 @@ func (c *Ce102) Connect(conf *serial.Config) error {
 }
 
 func (c *Ce102) BadCommand() {
+	log.Println("BadCommand")
 	c.startCePacket()
 	c.sendByteToCE(0)
 	c.endCEPacket()
 }
 
 func (c *Ce102) ReadSerialNumber(addrD uint16) {
+	log.Println("ReadSerialNumber addrD", addrD)
 	c.sendCommandToCE(int(addrD), ReadSerialNumber_Command)
 }
 
 func (c *Ce102) Ping(addrD uint16) {
+	log.Println("Ping addrD", addrD)
 	c.sendCommandToCE(int(addrD), Ping_Command)
 }
 
 func (c *Ce102) ReadTariffSum(addrD uint16) {
+	log.Println("ReadTariffSum addrD", addrD)
 	c.sendCommandToCE(int(addrD), ReadTariffSum_Command)
 }
 
 func (c *Ce102) sendCommandToCE(addrD, command int) {
+	log.Println("sendCommandToCE addrD", addrD)
 	c.startCePacket()
 
 	c.crc8 = 0
@@ -91,6 +97,7 @@ func (c *Ce102) sendCommandToCE(addrD, command int) {
 	c.endCEPacket()
 }
 func (c *Ce102) sendByteToCE(outByte uint16) {
+	log.Println("sendByteToCE")
 	if outByte == END_CH {
 		c.sendByteToRS485(END_REPL_1_CH)
 		c.sendByteToRS485(END_REPL_2_CH)
@@ -102,12 +109,15 @@ func (c *Ce102) sendByteToCE(outByte uint16) {
 	}
 }
 func (c *Ce102) endCEPacket() {
+	log.Println("endCEPacket")
 	c.sendByteToRS485(END_CH)
 }
 func (c *Ce102) startCePacket() {
+	log.Println("startCePacket")
 	c.sendByteToRS485(END_CH)
 }
 func (c *Ce102) sendByteToRS485(outByte uint16) {
+	log.Println("sendByteToRS485")
 	_, errWrite := c.port.Write([]byte{byte(outByte)})
 	if errWrite != nil {
 		log.Fatal(errWrite)
