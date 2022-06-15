@@ -31,19 +31,22 @@ func (c *Ce102) BadCommand() {
 	c.endCEPacket()
 }
 
-func (c *Ce102) ReadSerialNumber(addrD uint16) {
+func (c *Ce102) ReadSerialNumber(addrD uint16) []byte {
 	log.Println("ReadSerialNumber addrD", addrD)
 	c.sendCommandToCE(int(addrD), ReadSerialNumber_Command)
+	return []byte{}
 }
 
-func (c *Ce102) Ping(addrD uint16) {
+func (c *Ce102) Ping(addrD uint16) []byte {
 	log.Println("Ping addrD", addrD)
 	c.sendCommandToCE(int(addrD), Ping_Command)
+	return []byte{}
 }
 
-func (c *Ce102) ReadTariffSum(addrD uint16) {
+func (c *Ce102) ReadTariffSum(addrD uint16) []byte {
 	log.Println("ReadTariffSum addrD", addrD)
 	c.sendCommandToCE(int(addrD), ReadTariffSum_Command)
+	return []byte{}
 }
 
 func (c *Ce102) sendCommandToCE(addrD, command int) {
