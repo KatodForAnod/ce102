@@ -7,10 +7,19 @@ import (
 )
 
 type Ce102 struct {
-	port *serial.Port
-	buff [14]int
-	crc8 int
-	i    int
+	deviceName string
+	port       *serial.Port
+	buff       [14]int
+	crc8       int
+	i          int
+}
+
+func (c *Ce102) Init(deviceName string) {
+	c.deviceName = deviceName
+}
+
+func (c *Ce102) GetDeviceName() string {
+	return c.deviceName
 }
 
 func (c *Ce102) Connect(conf *serial.Config) error {
