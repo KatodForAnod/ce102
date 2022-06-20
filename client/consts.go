@@ -1,4 +1,4 @@
-package ce102
+package client
 
 const (
 	END_CH        = 0xC0

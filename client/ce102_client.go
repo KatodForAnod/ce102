@@ -1,4 +1,4 @@
-package ce102
+package client
 
 import (
 	"github.com/tarm/serial"
