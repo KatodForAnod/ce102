@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 type Config struct {
@@ -12,6 +13,13 @@ type Config struct {
 }
 
 type IotConfig struct {
+	DeviceName  string        `json:"device_name"`
+	Port        string        `json:"port"`
+	Baud        int           `json:"baud"`
+	ReadTimeout time.Duration `json:"read_timeout''"`
+	Size        byte          `json:"size"`
+	//	Parity
+	//	StopBits
 }
 
 const configPath = "conf.config"
