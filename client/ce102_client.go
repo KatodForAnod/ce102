@@ -9,22 +9,25 @@ import (
 type Ce102 struct {
 	deviceName string
 	port       *serial.Port
-	buff       [14]int
-	crc8       int
-	i          int
+	conf       *serial.Config
+
+	buff [14]int
+	crc8 int
+	i    int
 }
 
-func (c *Ce102) Init(deviceName string) {
+func (c *Ce102) Init(deviceName string, conf *serial.Config) {
 	c.deviceName = deviceName
+	c.conf = conf
 }
 
 func (c *Ce102) GetDeviceName() string {
 	return c.deviceName
 }
 
-func (c *Ce102) Connect(conf *serial.Config) error {
-	log.Println("Connect port:", conf.Name)
-	port, err := serial.OpenPort(conf)
+func (c *Ce102) Connect() error {
+	log.Println("Connect port:", c.conf.Name)
+	port, err := serial.OpenPort(c.conf)
 	if err != nil {
 		return err
 	}
