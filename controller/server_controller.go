@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"ce102/client"
 	"ce102/config"
 	"ce102/logsetting"
 	"ce102/memory"
+	"github.com/tarm/serial"
 	"log"
 )
 
@@ -48,6 +50,21 @@ func (c *Controller) GetLastNRowsLogs(nRows int) ([]string, error) {
 
 func (c *Controller) AddIoTDevice(device config.IotConfig) error {
 	log.Println("controller AddIoTDevice")
+
+	config := &serial.Config{
+		Name:        device.Port,
+		Baud:        device.Baud,
+		ReadTimeout: device.ReadTimeout,
+		Size:        device.Size,
+	}
+	ce102 := client.Ce102{}
+	ce102.Init(device.DeviceName, config)
+
+	err := c.ioTsController.AddIoTsClients([]client.Ce102{ce102})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	return nil
 }
