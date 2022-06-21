@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"github.com/tarm/serial"
 	"log"
 	"time"
@@ -11,6 +12,9 @@ type Ce102 struct {
 	port       *serial.Port
 	conf       *serial.Config
 
+	isObserveInformProcess *bool
+	stopObserve            chan bool
+
 	buff [14]int
 	crc8 int
 	i    int
@@ -19,10 +23,72 @@ type Ce102 struct {
 func (c *Ce102) Init(deviceName string, conf *serial.Config) {
 	c.deviceName = deviceName
 	c.conf = conf
+	c.stopObserve = make(chan bool)
+	c.isObserveInformProcess = new(bool)
+}
+
+func (c *Ce102) IsObserveInformProcess() bool {
+	return *c.isObserveInformProcess
+}
+
+func (c *Ce102) StopObserveInform() error {
+	log.Println("StopObserveInform device:", c.deviceName)
+	if !c.IsObserveInformProcess() {
+		err := errors.New("device " + c.deviceName + " not observing")
+		log.Println(err)
+		return err
+	}
+
+	select {
+	case c.stopObserve <- true:
+	default:
+		err := errors.New("StopObserveInform cant stop thread")
+		log.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func (c Ce102) StartObserveInform(save func() error, duration time.Duration) error {
+	log.Println("StartObserveInform device:", c.deviceName)
+	if *c.isObserveInformProcess {
+		err := errors.New("already observe")
+		log.Println(err)
+		return err
+	}
+
+	tr := true
+	c.isObserveInformProcess = &tr
+
+	for {
+		select {
+		case <-time.After(duration):
+			if *c.isObserveInformProcess {
+				if err := save(); err != nil {
+					log.Println(err)
+				}
+			}
+		case <-c.stopObserve:
+			fl := false
+			c.isObserveInformProcess = &fl
+			return nil
+		}
+	}
 }
 
 func (c *Ce102) GetDeviceName() string {
 	return c.deviceName
+}
+
+func (c *Ce102) Disconnect() error {
+	log.Println("Disconnect", c.deviceName, "from port", c.conf.Name)
+	if err := c.port.Close(); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
 }
 
 func (c *Ce102) Connect() error {
