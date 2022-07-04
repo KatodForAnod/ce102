@@ -22,7 +22,7 @@ type IotConfig struct {
 	//	StopBits
 }
 
-const configPath = "conf.config"
+var configPath = "conf.config"
 
 func LoadConfig() (loadedConf Config, err error) {
 	data, err := ioutil.ReadFile(configPath)
